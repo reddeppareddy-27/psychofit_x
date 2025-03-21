@@ -1,0 +1,236 @@
+/* ===== Global Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== Banner Section ===== */
+.banner {
+    position: relative;
+    width: 100%;
+    height: 85vh;
+    overflow: hidden;
+}
+
+.banner video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.banner .content {
+    position: absolute;
+    top: 65%; /* Perfectly centers vertically */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    padding: 0 20px; /* Padding for content */
+}
+.banner .content .highlight {
+    color: #0a2afb; /* Initial color */
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+.banner .content .highlight .highlight1 {
+    color: #fc0808; /* Initial color */
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+.banner .content .highlight:hover {
+    color: #fff; /* Hover color */
+    transform: scale(1.1); /* Slightly enlarges the text on hover */
+}
+
+/* ===== Headings ===== */
+.banner .content h1 {
+    font-size: 3rem; /* Default for large screens */
+    line-height: 1; /* Minimized vertical space */
+    white-space: nowrap; /* Forces single-line text */
+    text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+    overflow: hidden; /* Ensures no overflow */
+    color: #e65c00; /* Primary color */
+    font-weight: 700;
+    margin-bottom: 1.5rem; /* Space between h1 and next content */
+}
+
+.banner .content h3 {
+    font-size: 1.8rem; /* Default for large screens */
+    line-height: 1;
+    white-space: nowrap; /* Single-line text */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 1rem; /* Space below h3 */
+}
+
+/* ===== Paragraph Styling ===== */
+.banner .content p {
+    font-size: 1rem; /* Scaled for readability */
+    line-height: 1.5; /* Spaced lines for clarity */
+    color: #fff;
+    margin: 0 auto 2rem; /* Centered with space below */
+    max-width: 700px; /* Controls paragraph width */
+}
+
+/* ===== Button Styling ===== */
+.banner .content button {
+    width: 150px;
+    height: 50px;
+    background: linear-gradient(to left top, #2bf6ef 50%, #2bf6ef 50%);
+    border: none;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 2px; /* Increases horizontal spacing */
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.5s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.banner .content button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Arrow Down Styling ===== */
+.banner .arrow-down {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.6rem; /* Default size */
+    color: rgba(255, 255, 255, 0.8);
+    animation: bounce 1.5s infinite;
+    cursor: pointer;
+}
+
+.banner .arrow-down:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translate(-50%, 0);
+    }
+    50% {
+        transform: translate(-50%, 10px);
+    }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1024px) {
+    .banner .content h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.3rem; /* Reduced spacing */
+    }
+
+    .banner .content h3 {
+        font-size: 1.6rem; /* Adjusted for tablets */
+    }
+
+    .banner .content p {
+        font-size: 0.95rem;
+        margin-bottom: 1.8rem; /* More space from the button */
+    }
+
+    .banner .content button {
+        width: 140px;
+        height: 45px;
+        font-size: 15px;
+    }
+
+    .banner .arrow-down {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .banner .content h1 {
+        font-size: 2rem;
+        margin-bottom: 1.3rem;
+    }
+
+    .banner .content h3 {
+        font-size: 1.4rem; /* Adjusted for smaller screens */
+    }
+
+    .banner .content p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .banner .content button {
+        width: 130px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .banner .arrow-down {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .banner .content h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .banner .content h3 {
+        font-size: 1.2rem; /* Adjusted for smaller devices */
+    }
+
+    .banner .content p {
+        font-size: 0.85rem;
+        margin-bottom: 1.2rem;
+        max-width: 90%; /* Makes text fit better */
+    }
+
+    .banner .content button {
+        width: 120px;
+        height: 38px;
+        font-size: 12px;
+    }
+
+    .banner .arrow-down {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .banner .content h1 {
+        font-size: 1.5rem; /* Fits on very small screens */
+        margin-bottom: 1rem;
+    }
+
+    .banner .content h3 {
+        font-size: 1rem;
+    }
+
+    .banner .content p {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .banner .content button {
+        width: 110px;
+        height: 35px;
+        font-size: 11px;
+    }
+
+    .banner .arrow-down {
+        font-size: 1.2rem;
+    }
+}
