@@ -302,7 +302,7 @@
     }
 }
 
-@media screen and (max-width: 350px) {
+@media screen and (max-width: 380px) {
     .top-icons {
         gap: 5px;
     }
@@ -314,7 +314,7 @@
     }
     #btn-login,
     #btn-signup {
-        width: 65px; /* Further reduced size for very small screens */
+        width: 55px; /* Further reduced size for very small screens */
         height: 30px;
         font-size: 0.75rem;
         margin: 0 5px; /* Tighter spacing */
