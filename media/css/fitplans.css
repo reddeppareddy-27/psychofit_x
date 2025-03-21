@@ -1,0 +1,144 @@
+
+
+.section__container {
+  position: relative;
+  width: 100%;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.section__header {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #007bff; /* Blue color for H1 */
+  margin-bottom: 1rem;
+}
+
+.section__subheader {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Grid Layout for Price Cards */
+.price__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.price__card {
+  position: relative;
+  width: 400px; /* Increased width for the cards */
+  padding: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.price__card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.price__card__content h4 {
+  font-size: 1.5rem;
+  color: #000; /* Black color for H4 */
+  margin-bottom: 1rem;
+}
+
+.price__card__content p {
+  font-size: 1rem;
+  color: #555;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.price__card__content p i {
+  margin-right: 0.5rem;
+  color: #ff6600; /* Orange color for icons */
+}
+
+/* Added padding between paragraphs and button */
+.price__card__content {
+  margin-bottom: 1.5rem; /* Adds space between content and the button */
+}
+btn .price__btn{
+  text-decoration: none;
+
+}
+
+.price__btn {
+  display: block;
+  text-decoration: none;
+  margin: 0 auto; /* Centers the button horizontally */
+  width: 40%; /* Optional, can be adjusted based on design preference */
+  text-align: center;
+  background-color: #ff6600; /* Orange background for buttons */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.price__btn:hover {
+  background-color: #e65c00; /* Darker orange for hover effect */
+}
+
+/* Responsive Design for Tablets */
+@media (max-width: 1024px) {
+  .price__card {
+    width: 70%; /* Adjust width for tablets */
+  }
+
+  .price__btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+  }
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+  .price__grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .price__card {
+    width: 90%; /* Full width for mobile */
+  }
+
+  .price__btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+
+/* Small Mobile Views */
+@media (max-width: 480px) {
+  .section__header {
+    font-size: 2rem;
+  }
+
+  .price__card {
+    width: 100%; /* Occupy full width on small devices */
+  }
+
+  .price__card__content h4 {
+    font-size: 1.2rem;
+  }
+
+  .price__btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
