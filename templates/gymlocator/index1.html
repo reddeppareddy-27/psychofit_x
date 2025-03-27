@@ -1,31 +1,51 @@
 {% extends "base/base.html" %}
 {% load static %}
+
 {% block start %}
 <h1>Find a Gym</h1>
-<section id="gym-locator-results">
-    <label for="state">Select State:</label>
-    <select id="state">
-        <option value="">--Select State--</option>
-        {% for state in states %}
-        <option value="{{ state.id }}">{{ state.name }}</option>
-        {% endfor %}
-    </select>
+<section id="gym-locator-results" class="gym-locator-section">
+    <!-- Dropdown Container -->
+    <div class="gym-dropdown-container">
+        <!-- State Dropdown -->
+        <label class="gym-label" for="state">Select State:</label>
+        <select id="state" class="gym-dropdown" onchange="updateDistricts()">
+            <option value="">--Select State--</option>
+            {% for state in states %}
+            <option value="{{ state.id }}">{{ state.name }}</option>
+            {% endfor %}
+        </select>
 
-    <label for="district">Select District:</label>
-    <select id="district" disabled>
-        <option value="">--Select District--</option>
-    </select>
+        <!-- District Dropdown -->
+        <label class="gym-label" for="district">Select District:</label>
+        <select id="district" class="gym-dropdown" disabled onchange="updateCities()">
+            <option value="">--Select District--</option>
+        </select>
 
-    <label for="city">Select City:</label>
-    <select id="city" disabled>
-        <option value="">--Select City--</option>
-    </select>
+        <!-- City Dropdown -->
+        <label class="gym-label" for="city">Select City:</label>
+        <select id="city" class="gym-dropdown" disabled onchange="showFindGymButton()">
+            <option value="">--Select City--</option>
+        </select>
+        <button id="find-gym-btn" class="gym-btn" onclick="fetchGyms()" style="display: none;">Find Gym</button>
 
-    <h2>Available Gyms</h2>
-    <ul id="gyms-list">
-        <!-- Gym details will be dynamically appended here by JavaScript -->
+    </div>
+
+    <!-- Find Gym Button (Initially Hidden) -->
+    
+    <!-- Gym List -->
+    <h2 class="gym-heading">Available Gyms</h2>
+    <ul id="gyms-list" class="gym-card-list">
+        <!-- Gym details will be dynamically appended here -->
     </ul>
 </section>
 
+<!-- Map Container -->
+<div id="map" class="gym-map" style="height: 500px; width: 100%;"></div>
+
+<!-- Include JavaScript -->
 <script src="{% static 'js/gym1.js' %}" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMDbvWfGKtovLPtN9OClqVMizr8pwJMRo&libraries=places"></script>
+
+
+
 {% endblock %}

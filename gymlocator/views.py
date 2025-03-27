@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import State, District, City
 from django.http import JsonResponse
-from django.conf import settings  # Import settings
+from django.conf import settings
+import requests  # Import settings
 
 
 def home1(request):
@@ -36,18 +37,33 @@ def get_cities(request):
         return JsonResponse({'error': 'District ID is required.'}, status=400)
 
 
+
+
+
 def get_gyms(request):
-    city_id = request.GET.get('city_id')
-    if city_id:
+    city_name = request.GET.get('city_name')  # Fetch the city name from the request
+    if city_name:
         try:
-            city = get_object_or_404(City, id=city_id)  # Use get_object_or_404 for better error handling
-            gyms = city.gyms.values('name', 'phone_number', 'google_maps_link', 'image')  # Fetch gyms for the city
-            gyms_with_image_url = [
-                {**gym, 'image': request.build_absolute_uri(settings.MEDIA_URL + gym['image'])} if gym['image'] else {**gym, 'image': None}
-                for gym in gyms
-            ]
-            return JsonResponse({'gyms': gyms_with_image_url})
+            # Define Google Places API request parameters
+            GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY'
+            url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=gyms+in+{city_name}&key={GOOGLE_API_KEY}"
+
+            # Make a request to the Google Places API
+            response = requests.get(url)
+            if response.status_code == 200:
+                places_data = response.json()
+                gyms = [
+                    {
+                        'name': place['name'],
+                        'address': place['formatted_address'],
+                        'location': place['geometry']['location'],
+                    }
+                    for place in places_data.get('results', [])
+                ]
+                return JsonResponse({'gyms': gyms})
+            else:
+                return JsonResponse({'error': 'Failed to fetch gym data from Google Maps API.'}, status=500)
         except Exception as e:
             return JsonResponse({'error': 'An error occurred while fetching gyms.'}, status=500)
     else:
-        return JsonResponse({'error': 'City ID is required.'}, status=400)
+        return JsonResponse({'error': 'City name is required.'}, status=400)

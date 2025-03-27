@@ -19,6 +19,17 @@ from django.urls import path,include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from physicaldb.views import (
+    MuscleGroupViewSet, ExerciseCategoryViewSet, EquipmentViewSet, ExerciseViewSet, exercises_page
+)
+
+router = DefaultRouter()
+router.register(r'muscle-groups', MuscleGroupViewSet)
+router.register(r'categories', ExerciseCategoryViewSet)
+router.register(r'equipment', EquipmentViewSet)
+router.register(r'exercises', ExerciseViewSet)
 
 
 urlpatterns = [
@@ -32,6 +43,9 @@ urlpatterns = [
     path('services/', include('services.urls')),
     path('privacy-policy/', include('privacy.urls')),
     path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),  # API Endpoints
+   
+    
 ]
 
 

@@ -121,7 +121,7 @@ ul#gyms-list li h3 {
 ul#gyms-list li p {
     font-size: 14px;
     margin: 5px 0;
-    color: #eee; /* Ensure visibility on hover */
+    color: #161414; /* Ensure visibility on hover */
 }
 
 ul#gyms-list li a {

@@ -1,0 +1,261 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+<body>
+    <section class="exercise-section">
+        <div class="header">
+            <h1>Fitness Exercises Portal</h1>
+            <p>Browse our complete exercise library with animations and variations</p>
+        </div>
+    
+        <!-- Featured Exercises Section -->
+        <div class="featured-section">
+            <h2 class="section-title">🔥 Featured Exercises</h2>
+            <div class="exercises-container" id="featured-exercises">
+                <!-- Featured exercises will be loaded dynamically -->
+            </div>
+        </div>
+    
+        <div class="filters">
+            <div class="filter-group">
+                <label for="category">Category</label>
+                <select id="category">
+                    <option value="">All Categories</option>
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+    
+            <div class="filter-group">
+                <label for="muscle-group">Primary Muscle</label>
+                <select id="muscle-group">
+                    <option value="">All Muscle Groups</option>
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+    
+            <div class="filter-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty">
+                    <option value="">All Levels</option>
+                    <option value="B">Beginner</option>
+                    <option value="I">Intermediate</option>
+                    <option value="A">Advanced</option>
+                    <option value="P">Professional</option>
+                </select>
+            </div>
+    
+            <div class="filter-group">
+                <label for="equipment">Equipment</label>
+                <select id="equipment">
+                    <option value="">All Equipment</option>
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+    
+            <button id="apply-filters">Apply Filters</button>
+        </div>
+    
+        <div class="exercises-container" id="exercises-container">
+            <!-- Exercises will be loaded here by JavaScript -->
+        </div>
+    </section>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('exercises-container');
+            const categoryFilter = document.getElementById('category');
+            const muscleGroupFilter = document.getElementById('muscle-group');
+            const difficultyFilter = document.getElementById('difficulty');
+            const equipmentFilter = document.getElementById('equipment');
+            const applyBtn = document.getElementById('apply-filters');
+            
+            // Fetch data from API
+            async function fetchData(endpoint) {
+                try {
+                    const response = await fetch(`/api/${endpoint}/`);
+                    if (!response.ok) throw new Error('Network error');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error:', error);
+                    return [];
+                }
+            }
+            
+            // Load initial data
+            async function loadInitialData() {
+                const [categories, muscleGroups, equipment] = await Promise.all([
+                    fetchData('categories'),
+                    fetchData('muscle-groups'),
+                    fetchData('equipment')
+                ]);
+                
+                populateDropdown(categoryFilter, categories, 'name');
+                populateDropdown(muscleGroupFilter, muscleGroups, 'name');
+                populateDropdown(equipmentFilter, equipment, 'name');
+                
+                loadExercises();
+            }
+            
+            // Populate dropdowns
+            function populateDropdown(select, data, displayField) {
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item[displayField];
+                    select.appendChild(option);
+                });
+            }
+            
+            // Load exercises with filters
+            async function loadExercises(filters = {}) {
+                let url = '/api/exercises/';
+                const params = new URLSearchParams();
+                
+                if (filters.category) params.append('category', filters.category);
+                if (filters.muscleGroup) params.append('muscle_group', filters.muscleGroup);
+                if (filters.difficulty) params.append('difficulty', filters.difficulty);
+                if (filters.equipment) params.append('equipment', filters.equipment);
+                
+                if (params.toString()) url += `?${params.toString()}`;
+                
+                const exercises = await fetchData(url);
+                displayExercises(exercises);
+            }
+            
+            // Display exercises
+            function displayExercises(exercises) {
+                container.innerHTML = '';
+                
+                if (exercises.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; padding:40px; background:white; border-radius:8px;">
+                            <h3>No exercises found</h3>
+                            <p>Try adjusting your filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                exercises.forEach(exercise => {
+                    const card = document.createElement('div');
+                    card.className = 'exercise-card';
+                    
+                    // Get difficulty class
+                    const difficultyClass = {
+                        'B': 'beginner',
+                        'I': 'intermediate',
+                        'A': 'advanced',
+                        'P': 'professional'
+                    }[exercise.difficulty] || '';
+                    
+                    // Get primary animation if exists
+                    const primaryAnimation = exercise.animations.length > 0 ? exercise.animations[0] : null;
+                    
+                    card.innerHTML = `
+                        <div class="exercise-header">
+                            <h3 class="exercise-title">${exercise.name}</h3>
+                            <div class="exercise-meta">
+                                <span class="exercise-category">${exercise.category?.name || 'Uncategorized'}</span>
+                                <span class="difficulty ${difficultyClass}">
+                                    ${exercise.get_difficulty_display || exercise.difficulty}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="exercise-body">
+                            ${exercise.description ? `
+                                <p class="exercise-description">${exercise.description}</p>
+                            ` : ''}
+                            
+                            <div class="section-title">Primary Muscles</div>
+                            <div class="tags">
+                                ${exercise.primary_muscle_group ? `
+                                    <span class="tag">${exercise.primary_muscle_group.name}</span>
+                                ` : ''}
+                                ${exercise.secondary_muscle_group ? `
+                                    <span class="tag">${exercise.secondary_muscle_group.name} (secondary)</span>
+                                ` : ''}
+                            </div>
+                            
+                            ${exercise.equipment_required.length > 0 ? `
+                                <div class="section-title">Required Equipment</div>
+                                <div class="equipment-list">
+                                    ${exercise.equipment_required.map(item => `
+                                        <div class="equipment-item">
+                                            <span>${item.name}</span>
+                                            <span class="${item.exerciseequipment.required ? 'required' : 'not-required'}">
+                                                ${item.exerciseequipment.required ? 'Required' : 'Optional'}
+                                            </span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : '<p class="no-content">No equipment required</p>'}
+                            
+                            ${exercise.animations.length > 0 ? `
+                                <div class="section-title">Animations</div>
+                                ${exercise.animations.map(anim => `
+                                    <div style="margin-bottom:20px;">
+                                        <div class="animation-container">
+                                            ${anim.animation_type === 'VID' ? `
+                                                <video controls>
+                                                    <source src="${anim.animation_file}" type="video/mp4">
+                                                    Your browser doesn't support videos
+                                                </video>
+                                            ` : `
+                                                <img src="${anim.animation_file}" alt="${exercise.name} animation">
+                                            `}
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                            <span>Type: ${anim.get_animation_type_display || anim.animation_type}</span>
+                                            <span>Duration: ${anim.duration_seconds}s</span>
+                                        </div>
+                                        ${anim.view_angles.length > 0 ? `
+                                            <div class="tags">
+                                                Angles: ${anim.view_angles.map(angle => `
+                                                    <span class="tag">${angle.name}</span>
+                                                `).join('')}
+                                            </div>
+                                        ` : ''}
+                                        ${anim.variations.length > 0 ? `
+                                            <div class="tags" style="margin-top:5px;">
+                                                Variations: ${anim.variations.map(variation => `
+                                                    <span class="tag">${variation.name}</span>
+                                                `).join('')}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `).join('')}
+                            ` : '<p class="no-content">No animations available</p>'}
+                            
+                            ${exercise.variations.length > 0 ? `
+                                <div class="section-title">Exercise Variations</div>
+                                <div class="tags">
+                                    ${exercise.variations.map(variation => `
+                                        <span class="tag">${variation.name}</span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            // Apply filters
+            applyBtn.addEventListener('click', function() {
+                const filters = {
+                    category: categoryFilter.value,
+                    muscleGroup: muscleGroupFilter.value,
+                    difficulty: difficultyFilter.value,
+                    equipment: equipmentFilter.value
+                };
+                loadExercises(filters);
+            });
+            
+            // Initialize
+            loadInitialData();
+        });
+    </script>
+{% endblock %}

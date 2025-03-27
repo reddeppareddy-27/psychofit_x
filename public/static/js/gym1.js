@@ -1,90 +1,135 @@
-// Handle state dropdown change
-$('#state').change(function () {
-    const stateId = $(this).val();
-    if (stateId) {
-        // Fetch districts for the selected state
-        $.get('/get-districts/', { state_id: stateId }, function (data) {
-            const districts = data.districts;
-            let districtOptions = '<option value="">--Select District--</option>';
-            districts.forEach(d => {
-                districtOptions += `<option value="${d.id}">${d.name}</option>`;
-            });
-            $('#district').html(districtOptions).prop('disabled', false); // Populate and enable district dropdown
-            $('#city').prop('disabled', true).html('<option value="">--Select City--</option>'); // Reset city dropdown
-            $('#gyms-list').empty(); // Clear gyms list
-        }).fail(function () {
-            alert("Error fetching districts. Please try again.");
-            $('#district').prop('disabled', true).html('<option value="">--Select District--</option>');
-        });
-    } else {
-        // Reset dependent dropdowns
-        resetDistrictAndCityDropdowns();
-        $('#gyms-list').empty();
-    }
-});
-
-// Handle district dropdown change
-$('#district').change(function () {
-    const districtId = $(this).val();
-    if (districtId) {
-        // Fetch cities for the selected district
-        $.get('/get-cities/', { district_id: districtId }, function (data) {
-            const cities = data.cities;
-            let cityOptions = '<option value="">--Select City--</option>';
-            cities.forEach(c => {
-                cityOptions += `<option value="${c.id}">${c.name}</option>`;
-            });
-            $('#city').html(cityOptions).prop('disabled', false); // Populate and enable city dropdown
-            $('#gyms-list').empty(); // Clear gyms list
-        }).fail(function () {
-            alert("Error fetching cities. Please try again.");
-            $('#city').prop('disabled', true).html('<option value="">--Select City--</option>');
-        });
-    } else {
-        // Reset city dropdown
-        $('#city').prop('disabled', true).html('<option value="">--Select City--</option>');
-        $('#gyms-list').empty();
-    }
-});
-
-// Handle city dropdown change
-$('#city').change(function () {
-    const cityId = $(this).val();
-    if (cityId) {
-        // Fetch gyms for the selected city
-        $.get('/get-gyms/', { city_id: cityId }, function (data) {
-            const gyms = data.gyms;
-            $('#gyms-list').empty(); // Clear previous gym list
-            if (gyms && gyms.length > 0) {
-                gyms.forEach(g => {
-                    $('#gyms-list').append(`
-                        <li class="gym-item">
-                            <div class="gym-image-container">
-                                ${g.image ? `<img src="${g.image}" alt="${g.name}" class="gym-image" />` : '<p>No image available</p>'}
-                            </div>
-                            <div class="gym-details">
-                                <h3>${g.name}</h3>
-                                <p>Phone: ${g.phone_number}</p>
-                                <a href="${g.google_maps_link}" target="_blank">Location Link</a>
-                            </div>
-                        </li>
-                    `);
+$(document).ready(function () {
+    // Handle state dropdown change
+    $('#state').change(function () {
+        const stateId = $(this).val();
+        if (stateId) {
+            $.get('/get-districts/', { state_id: stateId }, function (data) {
+                let districtOptions = '<option value="">--Select District--</option>';
+                data.districts.forEach(d => {
+                    districtOptions += `<option value="${d.id}">${d.name}</option>`;
                 });
-            } else {
-                $('#gyms-list').append('<li>No gyms found for the selected city.</li>');
-            }
-        }).fail(function () {
-            alert("Error fetching gyms. Please try again.");
-            $('#gyms-list').empty();
-        });
-    } else {
-        // Clear gyms list if no city is selected
-        $('#gyms-list').empty();
-    }
+                $('#district').html(districtOptions).prop('disabled', false);
+                resetCityAndGyms();
+            }).fail(function () {
+                alert("Error fetching districts. Please try again.");
+                resetDropdowns();
+            });
+        } else {
+            resetDropdowns();
+        }
+    });
+
+    // Handle district dropdown change
+    $('#district').change(function () {
+        const districtId = $(this).val();
+        if (districtId) {
+            $.get('/get-cities/', { district_id: districtId }, function (data) {
+                let cityOptions = '<option value="">--Select City--</option>';
+                data.cities.forEach(c => {
+                    cityOptions += `<option value="${c.id}">${c.name}</option>`;
+                });
+                $('#city').html(cityOptions).prop('disabled', false);
+                resetGyms();
+            }).fail(function () {
+                alert("Error fetching cities. Please try again.");
+                resetCityAndGyms();
+            });
+        } else {
+            resetCityAndGyms();
+        }
+    });
+
+    // Show the Find Gym button when a city is selected
+    $('#city').change(function () {
+        if ($(this).val()) {
+            $('#find-gym-btn').fadeIn();
+        } else {
+            $('#find-gym-btn').fadeOut();
+            resetGyms();
+        }
+    });
+
+    // Handle Find Gym button click
+    $('#find-gym-btn').click(function () {
+        const cityName = $('#city option:selected').text();
+        if (cityName) {
+            initMap(cityName);
+        }
+    });
 });
 
-// Utility function to reset district and city dropdowns
-function resetDistrictAndCityDropdowns() {
-    $('#district').prop('disabled', true).html('<option value="">--Select District--</option>');
+// Utility functions
+function resetDropdowns() {
+    $('#district, #city').prop('disabled', true).html('<option value="">--Select--</option>');
+    resetGyms();
+}
+
+function resetCityAndGyms() {
     $('#city').prop('disabled', true).html('<option value="">--Select City--</option>');
+    resetGyms();
+}
+
+function resetGyms() {
+    $('#gyms-list').empty();
+    $('#find-gym-btn').fadeOut();
+}
+
+// Initialize Google Map and fetch gyms
+function initMap(cityName) {
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: { lat: 0, lng: 0 }, // Default center
+    });
+
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: cityName }, (results, status) => {
+        if (status === "OK") {
+            const cityCenter = results[0].geometry.location;
+            map.setCenter(cityCenter);
+
+            const service = new google.maps.places.PlacesService(map);
+            service.nearbySearch(
+                {
+                    location: cityCenter,
+                    radius: 5000, // 5 km radius
+                    keyword: "gym",
+                },
+                (results, status) => {
+                    $('#gyms-list').empty();
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        results.forEach(place => {
+                            const marker = new google.maps.Marker({
+                                position: place.geometry.location,
+                                map: map,
+                                title: place.name,
+                            });
+
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: `<h3>${place.name}</h3><p>${place.vicinity}</p>`,
+                            });
+
+                            marker.addListener('click', () => {
+                                infoWindow.open(map, marker);
+                            });
+
+                            // Append gym details to the list
+                            $('#gyms-list').append(`
+                                <li>
+                                    <h3>${place.name}</h3>
+                                    <p>${place.vicinity}</p>
+                                </li>
+                            `);
+                        });
+                    } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                        $('#gyms-list').append('<li>No gyms found in this city.</li>');
+                    } else {
+                        alert("Places API error. Status: " + status);
+                    }
+                }
+            );
+        } else {
+            alert(`Geocoding failed for ${cityName}: ${status}`);
+            console.error("Geocoding failed:", status);
+        }
+    });
 }
