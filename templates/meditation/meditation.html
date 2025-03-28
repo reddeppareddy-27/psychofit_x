@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+<section class="combined-section">
+    <h1>7-Day Meditation Plan</h1>
+    <div class="container">
+        {% if error %}
+            <p class="error" style="color: red; font-weight: bold;">{{ error }}</p>
+        {% else %}
+            {% for plan in meditation %}
+            <div class="card">
+                <h2>{{ plan.day }}</h2>
+                <div class="meditation-plan">
+                    <h3>Meditation Plan</h3>
+                    <ul>
+                        <li><strong>Meditation:</strong> {{ plan.Meditation }}</li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

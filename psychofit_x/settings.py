@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'services',
     'privacy',
     'physicaldb',
+    'yoga1',
+    'meditation1',
     
     
     

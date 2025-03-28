@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block start %}
+<section class="combined-section">
+    <h1>7-Day Yoga Plan</h1>
+    <div class="container">
+        {% if error %}
+            <p class="error" style="color: red; font-weight: bold;">{{ error }}</p>
+        {% else %}
+            {% for plan in yoga %}
+            <div class="card">
+                <h2>{{ plan.day }}</h2>
+                <div class="yoga-plan">
+                    <h3>Yoga Plan</h3>
+                    <ul>
+                        <li><strong>Yoga:</strong> {{ plan.yoga }}</li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

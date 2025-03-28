@@ -40,6 +40,8 @@ urlpatterns = [
     path('', include('height_growth.urls')),
     path('', include('gymlocator.urls')),
     path('', include('contactus.urls')),
+    path('', include('meditation1.urls')),
+    path('', include('yoga1.urls')),
     path('services/', include('services.urls')),
     path('privacy-policy/', include('privacy.urls')),
     path('admin/', admin.site.urls),
